@@ -446,7 +446,7 @@ function confirmPayment() {
     player: currentPlayer.name
   });
   // Debug info
-  console.log('Order saved:', saved, orderNo);
+  // Order saved
 }
 
 // Auto-detect when user returns to page after payment
@@ -460,12 +460,12 @@ function onPageVisible() {
 }
 // Multiple detection methods for cross-browser compatibility
 document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'visible') onPageVisible();
+  if (document.visibilityState === 'visible') { try { onPageVisible(); } catch(e) {} }
 });
-window.addEventListener('focus', onPageVisible);
-window.addEventListener('pageshow', onPageVisible);
+window.addEventListener('focus', function() { try { onPageVisible(); } catch(e) {} });
+window.addEventListener('pageshow', function() { try { onPageVisible(); } catch(e) {} });
 // Also check on any click in the modal (helps with WeChat/QQ browsers)
-document.getElementById('payView').addEventListener('click', function() { onPageVisible(); });
+document.getElementById('payView').addEventListener('click', function() { try { onPageVisible(); } catch(e) {} });
 
 
 
@@ -546,14 +546,14 @@ function showOrders() {
   if (!currentUser || !currentUser.phone) { showAuth(); return; }
   try {
     var allOrders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
-    console.log('All orders:', allOrders.length, 'Current user:', currentUser.phone);
+    // Debug: orders loaded
     var myOrders = [];
     for (var i = 0; i < allOrders.length; i++) {
       if (allOrders[i].phone === currentUser.phone) {
         myOrders.push(allOrders[i]);
       }
     }
-    console.log('My orders:', myOrders.length);
+    // Debug: my orders count
     var html = '';
     if (myOrders.length === 0) {
       html = '<div class="no-orders">暂无订单记录</div>';
@@ -597,6 +597,7 @@ function deleteOrder(orderNo) {
     showOrders(); // Refresh the list
   } catch(e) {}
 }
+document.getElementById('authOverlay').addEventListener('click', function(e) { if (e.target === this) closeAuth(); });
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePay();
 });
