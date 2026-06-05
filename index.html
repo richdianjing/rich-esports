@@ -480,14 +480,10 @@ function saveWallet(w) { localStorage.setItem('rich_wallet', JSON.stringify(w));
 
 function showWallet() {
   var w = getWallet();
-  var amt = prompt('💰 当前余额：¥' + w.balance.toFixed(2) + '
-
-输入充值金额（元）：
-
-提现请联系站长', '');
+  var amt = prompt("¥" + w.balance.toFixed(2) + " 充值金额（元） 提现联系站长", "");
   if (amt === null) return;
   amt = parseFloat(amt);
-  if (isNaN(amt) || amt <= 0) { alert('请输入有效金额'); return; }
+  if (isNaN(amt) || amt <= 0) { alert("请输入有效金额"); return; }
   recharge(amt);
 }
 
