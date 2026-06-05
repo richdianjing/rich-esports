@@ -8,7 +8,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background: -webkit-linear-gradient(135deg, #0f0c29, #302b63, #24243e); background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
     color: #fff;
   }
@@ -33,9 +33,10 @@
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    -webkit-animation: shine 3s ease-in-out infinite;
     animation: shine 3s ease-in-out infinite; text-shadow: none;
   }
-  @-webkit-keyframes shine
+  @-webkit-keyframes shine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
   @keyframes shine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
   .header .sub { color: #ccc; font-size: 1em; margin-top: 4px; letter-spacing: 6px; }
   .mobile-hint { color: rgba(255,255,255,0.5); font-size: 0.8em; margin-top: 8px; }
@@ -59,7 +60,7 @@
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 14px; padding: 0 20px; max-width: 900px; margin: 0 auto 6px; }
   .card { background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 18px 14px 14px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; cursor: default; }
-  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); border-color: rgba(247,151,30,0.3); }
+  .card:hover { -webkit-transform: translateY(-4px); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); border-color: rgba(247,151,30,0.3); }
   .avatar { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 10px; object-fit: cover; border: 3px solid rgba(247,151,30,0.4); transition: border-color 0.3s; display: block; }
   .card:hover .avatar { border-color: #f7971e; }
   .avatar-placeholder { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #fff; border: 3px solid rgba(247,151,30,0.4); }
@@ -67,12 +68,13 @@
   .card .tags { font-size: 0.72em; color: #ffd200; margin-bottom: 5px; line-height: 1.4; }
   .card .price { font-size: 1.15em; font-weight: bold; color: #ffd200; margin: 5px 0 10px; }
   .card .price small { font-size: 0.6em; color: #aaa; }
-  .btn-order { display: inline-block; width: 100%; padding: 9px 0; border: none; border-radius: 10px; background: linear-gradient(135deg, #f7971e, #ffd200); color: #000; font-weight: bold; font-size: 0.95em; cursor: pointer; transition: 0.3s; font-family: inherit; touch-action: manipulation; }
+  .btn-order { display: inline-block; width: 100%; padding: 9px 0; border: none; border-radius: 10px; -webkit-linear-gradient(135deg, #f7971e, #ffd200); background: linear-gradient(135deg, #f7971e, #ffd200); color: #000; font-weight: bold; font-size: 0.95em; cursor: pointer; transition: 0.3s; font-family: inherit; touch-action: manipulation; }
   .btn-order:hover { transform: scale(1.03); box-shadow: 0 4px 16px rgba(247,151,30,0.4); }
 
   .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: 999; align-items: center; justify-content: center; }
   .modal-overlay.show { display: flex; }
-  .modal-box { background: #1a1a2e; border-radius: 20px; padding: 30px 35px 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); animation: popIn 0.3s ease; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .modal-box { background: #1a1a2e; border-radius: 20px; padding: 30px 35px 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); -webkit-animation: popIn 0.3s ease;
+    animation: popIn 0.3s ease; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   @-webkit-keyframes popIn { from { -webkit-transform: scale(0.85); opacity: 0; } to { -webkit-transform: scale(1); opacity: 1; } }
   @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .modal-box h2 { font-size: 1.2em; margin-bottom: 6px; color: #ffd200; }
@@ -97,7 +99,7 @@
   .input-field { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #fff; font-size: 0.95em; font-family: inherit; outline: none; transition: border-color 0.3s; margin-bottom: 12px; box-sizing: border-box; }
   .input-field:focus { border-color: #f7971e; }
   .input-field::placeholder { color: rgba(255,255,255,0.3); }
-  .btn-pay-confirm { display: inline-block; width: 100%; padding: 11px 0; border: none; border-radius: 10px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; font-weight: bold; font-size: 1em; cursor: pointer; transition: 0.3s; font-family: inherit; margin-bottom: 10px; }
+  .btn-pay-confirm { display: inline-block; width: 100%; padding: 11px 0; border: none; border-radius: 10px; -webkit-linear-gradient(135deg, #27ae60, #2ecc71); background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; font-weight: bold; font-size: 1em; cursor: pointer; transition: 0.3s; font-family: inherit; margin-bottom: 10px; }
   .btn-pay-confirm:hover { transform: scale(1.03); box-shadow: 0 4px 16px rgba(46,204,113,0.4); }
   .order-receipt { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px 18px; margin: 12px 0; text-align: left; }
   .order-info { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.9em; }
@@ -254,7 +256,6 @@ var companions = {
 
 var playerList = [];
 var colors = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#1abc9c','#e84393','#fd79a8','#00cec9'];
-var globalIndex = 0;
 
 function renderCard(p) {
   var idx = playerList.length;
@@ -276,7 +277,6 @@ function renderCard(p) {
     + String.fromCharCode(60,47,100,105,118,62);
 }function render() {
   playerList = [];
-  globalIndex = 0;
   document.getElementById('deltaPcFunGrid').innerHTML = companions.deltaPcFun.map(renderCard).join('');
   document.getElementById('deltaPcTechGrid').innerHTML = companions.deltaPcTech.map(renderCard).join('');
   document.getElementById('deltaMobileFunGrid').innerHTML = companions.deltaMobileFun.map(renderCard).join('');
