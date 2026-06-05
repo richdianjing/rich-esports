@@ -91,6 +91,17 @@
     .platform-title { font-size: 1em; margin: 18px 12px 2px; }
     .zone-title { font-size: 0.9em; margin: 12px 12px 6px; }
   }
+  .input-field { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #fff; font-size: 0.95em; font-family: inherit; outline: none; transition: border-color 0.3s; margin-bottom: 12px; box-sizing: border-box; }
+  .input-field:focus { border-color: #f7971e; }
+  .input-field::placeholder { color: rgba(255,255,255,0.3); }
+  .btn-pay-confirm { display: inline-block; width: 100%; padding: 11px 0; border: none; border-radius: 10px; background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; font-weight: bold; font-size: 1em; cursor: pointer; transition: 0.3s; font-family: inherit; margin-bottom: 10px; }
+  .btn-pay-confirm:hover { transform: scale(1.03); box-shadow: 0 4px 16px rgba(46,204,113,0.4); }
+  .order-receipt { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px 18px; margin: 12px 0; text-align: left; }
+  .order-info { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.9em; }
+  .order-info:last-child { border-bottom: none; }
+  .order-info .label { color: rgba(255,255,255,0.5); }
+  .order-info .value { color: #fff; font-weight: bold; }
+  .order-tip { color: #ffd200; font-size: 0.85em; margin-bottom: 12px; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -169,12 +180,29 @@
 <!-- ===== 收款弹窗 ===== -->
 <div class="modal-overlay" id="payModal">
   <div class="modal-box">
-    <h2>&#128179; 下单付款</h2>
-    <div class="modal-player-name" id="modalPlayerName" style="font-size:1.1em; color:#fff; margin-bottom:4px;"></div>
-    <div class="amount" id="payAmount" style="margin-bottom:6px;">&#165;<span id="priceDisplay">0</span></div>
-    <img src="https://raw.githubusercontent.com/richdianjing/rich-esports/main/5844d51e67a898afdf47de9dca6c094b.jpg" alt="收款码" class="qrcode" id="payQr" loading="lazy">
-    <p class="hint">请使用<span style="color:#ffd200;font-weight:bold;">支付宝</span>扫码支付</p>
-    <div class="pay-methods">&#9989; 支持支付宝</div>
+    <div id="payView">
+      <h2>&#128179; 下单付款</h2>
+      <p class="hint">请扫码支付给 <span id="modalPlayerName" style="color:#ffd200;font-weight:bold"></span></p>
+      <img src="https://raw.githubusercontent.com/richdianjing/rich-esports/main/5844d51e67a898afdf47de9dca6c094b.jpg" alt="收款码" class="qrcode" id="payQr" loading="lazy">
+      <div class="amount" id="priceDisplay">&#165;0</div>
+      <div class="pay-methods">&#9989; 支持微信 / 支付宝</div>
+      <input type="text" id="userNameInput" class="input-field" placeholder="输入您的昵称（选填）" maxlength="20">
+      <button class="btn-pay-confirm" onclick="confirmPayment()">我已支付，查看订单 &#10003;</button>
+    </div>
+    <div id="orderResult" style="display:none">
+      <h2>&#127881; 下单成功</h2>
+      <div class="order-receipt">
+        <div class="order-info"><span class="label">&#128195; 订单号</span><span class="value" id="orderNoDisplay">-</span></div>
+        <div class="order-info"><span class="label">&#128197; 下单时间</span><span class="value" id="orderTimeDisplay">-</span></div>
+        <div class="order-info"><span class="label">&#128100; 下单用户</span><span class="value" id="orderUserDisplay">-</span></div>
+        <div class="order-info"><span class="label">&#127918; 商品</span><span class="value" id="orderItemDisplay">-</span></div>
+        <div class="order-info"><span class="label">&#128176; 金额</span><span class="value" id="orderAmountDisplay">-</span></div>
+      </div>
+      <div class="order-tip">&#128158; 请将订单号发给客服安排上号</div>
+      <button class="btn-close-modal" onclick="closePay()">完成</button>
+    </div>
+  </div>
+</div>
 
     <!-- 订单信息 (支付后显示) -->
     <div id="orderInfo" style="display:none; margin:12px 0; padding:12px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(247,151,30,0.2);">
@@ -234,13 +262,16 @@ var companions = {
   ],
 };
 
+var playerList = [];
 var colors = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#1abc9c','#e84393','#fd79a8','#00cec9'];
 var globalIndex = 0;
 
 function renderCard(p) {
-  var color = colors[globalIndex % colors.length];
-  globalIndex++;
+  var idx = playerList.length;
+  playerList.push(p);
+  var color = colors[idx % colors.length];
   var a;
+  var priceHtml = p.priceLabel || String.fromCharCode(165) + p.price + " <small>/ " + String.fromCharCode(23616) + "</small>";
   if (p.avatar) {
     a = '<img class="avatar" src="' + p.avatar + '" alt="' + p.name + '" onerror="this.style.display=' + "'" + 'none' + "'" + '">';
   } else {
@@ -256,6 +287,7 @@ function renderCard(p) {
 }
 
 function render() {
+  playerList = [];
   globalIndex = 0;
   document.getElementById('deltaPcFunGrid').innerHTML = companions.deltaPcFun.map(renderCard).join('');
   document.getElementById('deltaPcTechGrid').innerHTML = companions.deltaPcTech.map(renderCard).join('');
@@ -268,17 +300,16 @@ function render() {
 }
 render();
 
-var currentPlayer = '';
-var currentPrice = 0;
+var currentPlayer = null;
 
-function openPay(price, name, qrImage) {
-  currentPlayer = name;
-  currentPrice = price;
-  document.getElementById('modalPlayerName').textContent = name;
-  document.getElementById('priceDisplay').textContent = price + ' ' + (price === 1 ? '元/1小时' : '元/局');
-  document.getElementById('payQr').src = qrImage || 'https://raw.githubusercontent.com/richdianjing/rich-esports/main/5844d51e67a898afdf47de9dca6c094b.jpg';
-  document.getElementById('orderInfo').style.display = 'none';
-  document.getElementById('btnPayConfirm').style.display = 'block';
+function openPay(player) {
+  currentPlayer = player;
+  document.getElementById('payQr').src = player.alipayQr || 'https://raw.githubusercontent.com/richdianjing/rich-esports/main/5844d51e67a898afdf47de9dca6c094b.jpg';
+  document.getElementById('priceDisplay').innerHTML = player.priceLabel || String.fromCharCode(165) + player.price + " <small>/ " + String.fromCharCode(23616) + "</small>";
+  document.getElementById('modalPlayerName').textContent = player.name;
+  document.getElementById('userNameInput').value = '';
+  document.getElementById('payView').style.display = '';
+  document.getElementById('orderResult').style.display = 'none';
   document.getElementById('payModal').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -289,22 +320,22 @@ function closePay() {
 }
 
 function confirmPayment() {
-  // Generate order number (timestamp + random)
+  var userName = document.getElementById('userNameInput').value.trim();
+  if (!userName) userName = currentPlayer.name + '（匿名用户）';
   var now = new Date();
-  var year = now.getFullYear();
-  var month = String(now.getMonth() + 1).padStart(2, '0');
-  var day = String(now.getDate()).padStart(2, '0');
-  var hours = String(now.getHours()).padStart(2, '0');
-  var mins = String(now.getMinutes()).padStart(2, '0');
-  var secs = String(now.getSeconds()).padStart(2, '0');
-  var rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-  var orderNo = 'RICH' + year + month + day + hours + mins + secs + rand;
-  var timeStr = year + '-' + month + '-' + day + ' ' + hours + ':' + mins + ':' + secs;
-
-  document.getElementById('orderNumber').textContent = orderNo;
-  document.getElementById('orderTime').textContent = timeStr;
-  document.getElementById('orderInfo').style.display = 'block';
-  document.getElementById('btnPayConfirm').style.display = 'none';
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+  var orderTime = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+    + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  var t = now.getTime();
+  var r = Math.random().toString(36).substring(2, 6).toUpperCase();
+  var orderNo = 'RICH' + t.toString(36).toUpperCase() + r;
+  document.getElementById('payView').style.display = 'none';
+  document.getElementById('orderResult').style.display = '';
+  document.getElementById('orderNoDisplay').textContent = orderNo;
+  document.getElementById('orderTimeDisplay').textContent = orderTime;
+  document.getElementById('orderUserDisplay').textContent = userName;
+  document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
+  document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || String.fromCharCode(165) + currentPlayer.price;
 }
 
 document.getElementById('payModal').addEventListener('click', function(e) {
@@ -312,6 +343,13 @@ document.getElementById('payModal').addEventListener('click', function(e) {
 });
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closePay();
+});
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn-order');
+  if (btn) {
+    var idx = parseInt(btn.getAttribute('data-idx'));
+    if (!isNaN(idx) && playerList[idx]) openPay(playerList[idx]);
+  }
 });
 window.addEventListener('load', function() {
   setTimeout(function() { document.body.classList.add('loaded'); }, 100);
