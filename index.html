@@ -170,10 +170,20 @@
 <div class="modal-overlay" id="payModal">
   <div class="modal-box">
     <h2>&#128179; 下单付款</h2>
-    <p class="hint">请扫码支付后联系客服上号</p>
+    <div class="modal-player-name" id="modalPlayerName" style="font-size:1.1em; color:#fff; margin-bottom:4px;"></div>
+    <div class="amount" id="payAmount" style="margin-bottom:6px;">&#165;<span id="priceDisplay">0</span></div>
     <img src="5844d51e67a898afdf47de9dca6c094b.jpg" alt="收款码" class="qrcode" id="payQr" loading="lazy">
-    <div class="amount" id="payAmount">&#165;<span id="priceDisplay">0</span></div>
-    <div class="pay-methods">&#9989; 支持微信 / 支付宝</div>
+    <p class="hint">请使用<span style="color:#ffd200;font-weight:bold;">支付宝</span>扫码支付</p>
+    <div class="pay-methods">&#9989; 支持支付宝</div>
+
+    <!-- 订单信息 (支付后显示) -->
+    <div id="orderInfo" style="display:none; margin:12px 0; padding:12px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(247,151,30,0.2);">
+      <div style="color:#4fc3f7; font-size:0.85em; margin-bottom:6px;">&#9989; 支付成功</div>
+      <div style="font-size:0.8em; color:#aaa; margin-bottom:3px;">订单号：<span id="orderNumber" style="color:#fff; font-family:monospace;">---</span></div>
+      <div style="font-size:0.8em; color:#aaa;">下单时间：<span id="orderTime" style="color:#fff;">---</span></div>
+    </div>
+
+    <button class="btn-order" id="btnPayConfirm" onclick="confirmPayment()" style="margin-bottom:8px; background:linear-gradient(135deg,#4fc3f7,#2196f3);">我已支付 &#10003;</button>
     <button class="btn-close-modal" onclick="closePay()">关闭</button>
   </div>
 </div>
@@ -181,6 +191,7 @@
 <script>
 var companions = {
   deltaPcFun: [
+    { name: '徐艺', avatar: 'xuyi-avatar.jpg', price: 1, tags: '第一大怨种', priceLabel: '1元/1小时', alipayQr: '5844d51e67a898afdf47de9dca6c094b.jpg' },
     { name: '富晓天', avatar: '', price: 48, tags: '\u5929\u4e0b\u7b2c\u4e00\u5e05\u7684\u7537\u4eba' },
     { name: '灵儿', avatar: '', price: 58, tags: '🌸 甜妹·温柔·声音好听' },
     { name: '小柒', avatar: '', price: 68, tags: '🌸 御姐·知心·深夜陪伴' },
@@ -228,19 +239,19 @@ var globalIndex = 0;
 function renderCard(p) {
   var color = colors[globalIndex % colors.length];
   globalIndex++;
-  var avatarHtml;
+  var a;
   if (p.avatar) {
-    avatarHtml = "<img class="avatar" src="" + p.avatar + "" alt="" + p.name + "" onerror="this.style.display='none'">";
+    a = '<img class="avatar" src="' + p.avatar + '" alt="' + p.name + '" onerror="this.style.display=' + "'" + 'none' + "'" + '">';
   } else {
-    avatarHtml = "<div class="avatar-placeholder" style="background:" + color + "">" + p.name.charAt(0) + "</div>";
+    a = '<div class="avatar-placeholder" style="background:' + color + '">' + p.name.charAt(0) + '</div>';
   }
-  return "<div class="card">"
-    + avatarHtml
-    + "<div class="name">" + p.name + "</div>"
-    + "<div class="tags">" + p.tags + "</div>"
-    + "<div class="price">¥" + p.price + " <small>/ 局</small></div>"
-    + "<button class="btn-order" onclick="openPay(" + p.price + ", '" + p.name + "')">立即下单</button>"
-    + "</div>";
+  return '<div class="card">'
+    + a
+    + '<div class="name">' + p.name + '</div>'
+    + '<div class="tags">' + p.tags + '</div>'
+    + '<div class="price">' + (p.priceLabel || String.fromCharCode(165) + p.price + ' <small>/ ' + String.fromCharCode(23616) + '</small>') + '</div>'
+    + '<button class="btn-order" onclick="openPay(' + p.price + ", '" + p.name + "', '" + (p.alipayQr || '5844d51e67a898afdf47de9dca6c094b.jpg') + "')">" + String.fromCharCode(31435,21363,19979,21333) + '</button>'
+    + '</div>';
 }
 
 function render() {
@@ -257,16 +268,44 @@ function render() {
 render();
 
 var currentPlayer = '';
-function openPay(price, name) {
+var currentPrice = 0;
+
+function openPay(price, name, qrImage) {
   currentPlayer = name;
-  document.getElementById('priceDisplay').textContent = price;
+  currentPrice = price;
+  document.getElementById('modalPlayerName').textContent = name;
+  document.getElementById('priceDisplay').textContent = price + ' ' + (price === 1 ? '元/1小时' : '元/局');
+  document.getElementById('payQr').src = qrImage || '5844d51e67a898afdf47de9dca6c094b.jpg';
+  document.getElementById('orderInfo').style.display = 'none';
+  document.getElementById('btnPayConfirm').style.display = 'block';
   document.getElementById('payModal').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
+
 function closePay() {
   document.getElementById('payModal').classList.remove('show');
   document.body.style.overflow = '';
 }
+
+function confirmPayment() {
+  // Generate order number (timestamp + random)
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = String(now.getMonth() + 1).padStart(2, '0');
+  var day = String(now.getDate()).padStart(2, '0');
+  var hours = String(now.getHours()).padStart(2, '0');
+  var mins = String(now.getMinutes()).padStart(2, '0');
+  var secs = String(now.getSeconds()).padStart(2, '0');
+  var rand = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+  var orderNo = 'RICH' + year + month + day + hours + mins + secs + rand;
+  var timeStr = year + '-' + month + '-' + day + ' ' + hours + ':' + mins + ':' + secs;
+
+  document.getElementById('orderNumber').textContent = orderNo;
+  document.getElementById('orderTime').textContent = timeStr;
+  document.getElementById('orderInfo').style.display = 'block';
+  document.getElementById('btnPayConfirm').style.display = 'none';
+}
+
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePay();
 });
