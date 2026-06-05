@@ -419,14 +419,13 @@ function confirmPayment() {
   document.getElementById('orderUserDisplay').textContent = userName;
   document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
   document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || '¥' + currentPlayer.price;
-}
   // Save order to localStorage
-  orderNo = document.getElementById('orderNoDisplay').textContent;
-  if (orderNo && orderNo !== '-') {
-    try {
-      var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
-      orders.push({
-        orderNo: orderNo,
+  try {
+    var orderNo2 = document.getElementById('orderNoDisplay').textContent;
+    if (orderNo2 && orderNo2 !== '-') {
+      var orders2 = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+      orders2.push({
+        orderNo: orderNo2,
         time: document.getElementById('orderTimeDisplay').textContent,
         user: document.getElementById('orderUserDisplay').textContent,
         item: document.getElementById('orderItemDisplay').textContent,
@@ -435,9 +434,10 @@ function confirmPayment() {
         userPhone: currentUser ? currentUser.phone : '',
         userWechat: currentUser ? currentUser.wechat : ''
       });
-      localStorage.setItem('rich_orders', JSON.stringify(orders));
-    } catch(e) {}
-  }
+      localStorage.setItem('rich_orders', JSON.stringify(orders2));
+    }
+  } catch(e) {}
+}
 
 // Auto-detect when user returns to page after payment
 function onPageVisible() {
