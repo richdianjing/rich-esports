@@ -10,7 +10,7 @@
     font-family: 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', 'Roboto', sans-serif;
     background: -webkit-linear-gradient(135deg, #0f0c29, #302b63, #24243e); background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: -webkit-fill-available; /* iOS Safari viewport fix */
     color: #fff;
   }
   body.loaded {
@@ -83,6 +83,7 @@
   .modal-overlay.show { display: -webkit-flex; display: flex; }
   .modal-box { background: #1a1a2e; border-radius: 20px; padding: 30px 35px 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); -webkit-animation: popIn 0.3s ease;
     animation: popIn 0.3s ease; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  @-webkit-keyframes popIn { from { -webkit-transform: scale(0.85); opacity: 0; } to { -webkit-transform: scale(1); opacity: 1; } }
   @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .modal-box h2 { font-size: 1.2em; margin-bottom: 6px; color: #ffd200; }
   .modal-box .hint { font-size: 0.85em; color: #aaa; margin-bottom: 16px; }
@@ -224,7 +225,7 @@
 <script>
 var companions = {
   deltaPcFun: [
-    { name: '富晓天', avatar: '', price: 48, tags: '\u5929\u4e0b\u7b2c\u4e00\u5e05\u7684\u7537\u4eba' },
+    { name: '富晓天', avatar: '', price: 48, tags: '天下第一帅的男人' },
     { name: '灵儿', avatar: '', price: 58, tags: '🌸 甜妹·温柔·声音好听' },
     { name: '小柒', avatar: '', price: 68, tags: '🌸 御姐·知心·深夜陪伴' },
   ],
@@ -307,7 +308,7 @@ var currentPlayer = null;
 function openPay(player) {
   currentPlayer = player;
   document.getElementById('payQr').src = player.alipayQr || '5844d51e67a898afdf47de9dca6c094b.jpg';
-  document.getElementById('priceDisplay').innerHTML = player.priceLabel || String.fromCharCode(165) + player.price + " <small>/ " + String.fromCharCode(23616) + "</small>";
+  document.getElementById('priceDisplay').innerHTML = player.priceLabel || '¥' + player.price + ' <small>/局</small>';
   document.getElementById('modalPlayerName').textContent = player.name;
   document.getElementById('userNameInput').value = '';
   document.getElementById('payView').style.display = '';
@@ -337,7 +338,7 @@ function confirmPayment() {
   document.getElementById('orderTimeDisplay').textContent = orderTime;
   document.getElementById('orderUserDisplay').textContent = userName;
   document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
-  document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || String.fromCharCode(165) + currentPlayer.price;
+  document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || '¥' + currentPlayer.price;
 }
 
 document.getElementById('payModal').addEventListener('click', function(e) {
