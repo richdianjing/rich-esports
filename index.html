@@ -373,7 +373,12 @@ try { render(); } catch(e) { console.error(e); document.body.innerHTML += '<div 
 var currentPlayer = null;
 
 function openPay(player) {
-  if (!currentUser) { showAuth(); return; }
+  if (!currentUser) { 
+    showAuth(); 
+    // Retry after login
+    window._pendingOrder = player;
+    return; 
+  }
   currentPlayer = player;
   document.getElementById('payQr').src = player.alipayQr || '5844d51e67a898afdf47de9dca6c094b.jpg';
   document.getElementById('priceDisplay').innerHTML = player.priceLabel || '¥' + player.price + ' <small>/局</small>';
@@ -396,6 +401,7 @@ function openPay(player) {
 }
 
 function closePay() {
+  window._pendingOrder = null;
   if (window._payTimer) clearTimeout(window._payTimer);
   window._paymentPending = false;
   document.getElementById('payModal').classList.remove('show');
@@ -403,6 +409,7 @@ function closePay() {
 }
 
 function confirmPayment() {
+  if (!currentPlayer) { closePay(); return; }
   var userName = document.getElementById('userNameInput').value.trim();
   if (!userName) userName = currentPlayer.name + '（匿名用户）';
   var now = new Date();
@@ -420,7 +427,7 @@ function confirmPayment() {
   document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
   document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || '¥' + currentPlayer.price;
   // Save order to localStorage
-  saveOrderToLocal({
+  var saved = saveOrderToLocal({
     orderNo: orderNo,
     time: orderTime,
     user: userName,
@@ -428,6 +435,8 @@ function confirmPayment() {
     amount: currentPlayer.priceLabel || '¥' + currentPlayer.price,
     player: currentPlayer.name
   });
+  // Debug info
+  console.log('Order saved:', saved, orderNo);
 }
 
 // Auto-detect when user returns to page after payment
@@ -484,6 +493,12 @@ function handleAuth() {
   document.getElementById('btnLogout').style.display = '';
   document.getElementById('btnLogin').style.display = 'none';
   closeAuth();
+  // Retry pending order if exists
+  if (window._pendingOrder) {
+    var p = window._pendingOrder;
+    window._pendingOrder = null;
+    setTimeout(function() { openPay(p); }, 300);
+  }
 }
 
 function logout() {
@@ -521,12 +536,14 @@ function showOrders() {
   if (!currentUser || !currentUser.phone) { showAuth(); return; }
   try {
     var allOrders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+    console.log('All orders:', allOrders.length, 'Current user:', currentUser.phone);
     var myOrders = [];
     for (var i = 0; i < allOrders.length; i++) {
       if (allOrders[i].phone === currentUser.phone) {
         myOrders.push(allOrders[i]);
       }
     }
+    console.log('My orders:', myOrders.length);
     var html = '';
     if (myOrders.length === 0) {
       html = '<div class="no-orders">暂无订单记录</div>';
