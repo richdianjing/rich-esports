@@ -420,23 +420,14 @@ function confirmPayment() {
   document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
   document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || '¥' + currentPlayer.price;
   // Save order to localStorage
-  try {
-    var orderNo2 = document.getElementById('orderNoDisplay').textContent;
-    if (orderNo2 && orderNo2 !== '-') {
-      var orders2 = JSON.parse(localStorage.getItem('rich_orders') || '[]');
-      orders2.push({
-        orderNo: orderNo2,
-        time: document.getElementById('orderTimeDisplay').textContent,
-        user: document.getElementById('orderUserDisplay').textContent,
-        item: document.getElementById('orderItemDisplay').textContent,
-        amount: document.getElementById('orderAmountDisplay').textContent,
-        player: currentPlayer ? currentPlayer.name : '',
-        userPhone: currentUser ? currentUser.phone : '',
-        userWechat: currentUser ? currentUser.wechat : ''
-      });
-      localStorage.setItem('rich_orders', JSON.stringify(orders2));
-    }
-  } catch(e) {}
+  saveOrderToLocal({
+    orderNo: orderNo,
+    time: orderTime,
+    user: userName,
+    item: currentPlayer.name + ' 陪玩',
+    amount: currentPlayer.priceLabel || '¥' + currentPlayer.price,
+    player: currentPlayer.name
+  });
 }
 
 // Auto-detect when user returns to page after payment
@@ -458,14 +449,17 @@ window.addEventListener('pageshow', onPageVisible);
 document.getElementById('payView').addEventListener('click', function() { onPageVisible(); });
 
 
+
 // ===== Auth System =====
 var currentUser = null;
-var authData = JSON.parse(localStorage.getItem('rich_auth') || '{}');
 
 function initAuth() {
-  if (authData.phone && authData.wechat) {
-    currentUser = authData;
-    document.getElementById('userDisplay').textContent = authData.wechat;
+  var saved = localStorage.getItem('rich_auth');
+  if (saved) {
+    try { currentUser = JSON.parse(saved); } catch(e) {}
+  }
+  if (currentUser && currentUser.phone) {
+    document.getElementById('userDisplay').textContent = currentUser.wechat || '用户';
     document.getElementById('userDisplay').style.display = '';
     document.getElementById('btnOrders').style.display = '';
     document.getElementById('btnLogout').style.display = '';
@@ -481,10 +475,9 @@ function handleAuth() {
   var wechat = document.getElementById('authWechat').value.trim();
   var phone = document.getElementById('authPhone').value.trim();
   if (!wechat) { alert('请输入微信昵称'); return; }
-  if (!phone || phone.length < 11) { alert('请输入正确的手机号'); return; }
-  authData = { wechat: wechat, phone: phone };
-  localStorage.setItem('rich_auth', JSON.stringify(authData));
-  currentUser = authData;
+  if (!phone || phone.length < 11) { alert('请输入11位手机号'); return; }
+  currentUser = { wechat: wechat, phone: phone };
+  localStorage.setItem('rich_auth', JSON.stringify(currentUser));
   document.getElementById('userDisplay').textContent = wechat;
   document.getElementById('userDisplay').style.display = '';
   document.getElementById('btnOrders').style.display = '';
@@ -496,52 +489,71 @@ function handleAuth() {
 function logout() {
   if (!confirm('确认退出登录？')) return;
   localStorage.removeItem('rich_auth');
-  authData = {}; currentUser = null;
+  currentUser = null;
   document.getElementById('userDisplay').style.display = 'none';
   document.getElementById('btnOrders').style.display = 'none';
   document.getElementById('btnLogout').style.display = 'none';
   document.getElementById('btnLogin').style.display = '';
 }
 
-// ===== Order Storage =====
-function saveOrder(order) {
-  var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
-  order.userPhone = currentUser.phone;
-  order.userWechat = currentUser.wechat;
-  orders.push(order);
-  localStorage.setItem('rich_orders', JSON.stringify(orders));
+// ===== Order Saving =====
+function saveOrderToLocal(orderInfo) {
+  try {
+    var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+    orders.push({
+      orderNo: orderInfo.orderNo,
+      time: orderInfo.time,
+      user: orderInfo.user,
+      item: orderInfo.item,
+      amount: orderInfo.amount,
+      player: orderInfo.player,
+      phone: currentUser ? currentUser.phone : '',
+      wechat: currentUser ? currentUser.wechat : '',
+      createdAt: new Date().getTime()
+    });
+    localStorage.setItem('rich_orders', JSON.stringify(orders));
+    return true;
+  } catch(e) { return false; }
 }
 
 // ===== Order Query =====
 function showOrders() {
-  if (!currentUser) { showAuth(); return; }
-  var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
-  var myOrders = orders.filter(function(o) { return o.userPhone === currentUser.phone; });
-  var html = '';
-  if (myOrders.length === 0) {
-    html = '<div class="no-orders">暂无订单记录</div>';
-  } else {
-    for (var i = myOrders.length - 1; i >= 0; i--) {
-      var o = myOrders[i];
-      html += '<div class="order-item">'
-        + '<div class="oi-row"><span class="oi-label">订单号</span><span class="oi-value">' + o.orderNo + '</span></div>'
-        + '<div class="oi-row"><span class="oi-label">时间</span><span class="oi-value">' + o.time + '</span></div>'
-        + '<div class="oi-row"><span class="oi-label">商品</span><span class="oi-value">' + o.item + '</span></div>'
-        + '<div class="oi-row"><span class="oi-label">金额</span><span class="oi-value oi-status">' + o.amount + '</span></div>'
-        + '<div class="oi-row"><span class="oi-label">下单用户</span><span class="oi-value">' + o.user + '</span></div>'
-        + '</div>';
+  if (!currentUser || !currentUser.phone) { showAuth(); return; }
+  try {
+    var allOrders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+    var myOrders = [];
+    for (var i = 0; i < allOrders.length; i++) {
+      if (allOrders[i].phone === currentUser.phone) {
+        myOrders.push(allOrders[i]);
+      }
     }
+    var html = '';
+    if (myOrders.length === 0) {
+      html = '<div class="no-orders">暂无订单记录</div>';
+    } else {
+      for (var i = myOrders.length - 1; i >= 0; i--) {
+        var o = myOrders[i];
+        html += '<div class="order-item">'
+          + '<div class="oi-row"><span class="oi-label">订单号</span><span class="oi-value">' + (o.orderNo || '-') + '</span></div>'
+          + '<div class="oi-row"><span class="oi-label">时间</span><span class="oi-value">' + (o.time || '-') + '</span></div>'
+          + '<div class="oi-row"><span class="oi-label">商品</span><span class="oi-value">' + (o.item || '-') + '</span></div>'
+          + '<div class="oi-row"><span class="oi-label">金额</span><span class="oi-value oi-status">' + (o.amount || '-') + '</span></div>'
+          + '<div class="oi-row"><span class="oi-label">用户</span><span class="oi-value">' + (o.user || '-') + '</span></div>'
+          + '</div>';
+      }
+    }
+    document.getElementById('ordersList').innerHTML = html;
+    document.getElementById('ordersOverlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  } catch(e) {
+    document.getElementById('ordersList').innerHTML = '<div class="no-orders">加载订单失败</div>';
   }
-  document.getElementById('ordersList').innerHTML = html;
-  document.getElementById('ordersOverlay').classList.add('show');
-  document.body.style.overflow = 'hidden';
 }
 
 function closeOrders() {
   document.getElementById('ordersOverlay').classList.remove('show');
   document.body.style.overflow = '';
 }
-
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePay();
 });
