@@ -84,6 +84,22 @@
     height: 2px;
     background: linear-gradient(90deg, transparent, #f7971e, transparent);
   }
+  .sub-section-title {
+    text-align: center;
+    font-size: 1.15em;
+    font-weight: bold;
+    color: #ffd200;
+    margin: 20px 20px 12px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    letter-spacing: 2px;
+  }
+  .sub-section-title span {
+    display: inline-block;
+    background: rgba(0,0,0,0.4);
+    padding: 4px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(247,151,30,0.25);
+  }
   .section-title .badge {
     display: inline-block;
     font-size: 0.5em;
@@ -296,11 +312,20 @@
   <!-- ===== 端游区 ===== -->
   <div class="section-title">
     <span class="line"></span>
-    <span>🖥️ 端游区 <span class="badge">HOT</span></span>
+    <span>🖥️ 端游区</span>
     <span class="line"></span>
   </div>
-  <div style="max-width:900px;margin:-10px auto 10px;padding:0 24px;font-size:0.85em;color:#ffd200;text-align:center;opacity:0.7;">三角洲行动 · 专业陪玩 · 把把C位</div>
-  <div class="grid" id="pcGrid">
+
+  <div class="sub-section-title">
+    <span>🎮 娱乐区 <span class="badge">HOT</span></span>
+  </div>
+  <div class="grid" id="pcFunGrid">
+  </div>
+
+  <div class="sub-section-title">
+    <span>🛡️ 护航区</span>
+  </div>
+  <div class="grid" id="pcEscortGrid">
   </div>
 
   <!-- ===== 手游区 ===== -->
@@ -309,8 +334,17 @@
     <span>📱 手游区</span>
     <span class="line"></span>
   </div>
-  <div style="max-width:900px;margin:-10px auto 10px;padding:0 24px;font-size:0.85em;color:#ffd200;text-align:center;opacity:0.7;">三角洲行动 · 高效上分 · 贴心陪伴</div>
-  <div class="grid" id="mobileGrid">
+
+  <div class="sub-section-title">
+    <span>🎮 娱乐区</span>
+  </div>
+  <div class="grid" id="mobileFunGrid">
+  </div>
+
+  <div class="sub-section-title">
+    <span>🛡️ 护航区</span>
+  </div>
+  <div class="grid" id="mobileEscortGrid">
   </div>
 
   <!-- ===== Footer ===== -->
@@ -335,21 +369,26 @@
 <script>
   // ===== 数据 =====
   const companions = {
-    pc: [
+    pcFun: [
+      { name: '甜甜',    avatar: '', price: 48,  tags: '🌸 甜妹·温柔·声音好听' },
+      { name: '灵儿',    avatar: '', price: 58,  tags: '🌸 萝莉音·陪聊·治愈' },
+      { name: '小柒',    avatar: '', price: 68,  tags: '🌸 御姐·知心·深夜陪伴' },
+    ],
+    pcEscort: [
       { name: '战神',    avatar: '', price: 88,  tags: '🛡️ 护航·百星王者' },
       { name: '猎鹰',    avatar: '', price: 128, tags: '🛡️ 战术指挥·包赢' },
       { name: '雷霆',    avatar: '', price: 108, tags: '🛡️ 突破手·钢枪猛男' },
       { name: '影子',    avatar: '', price: 98,  tags: '🛡️ 自由人·补位全能' },
-      { name: '甜甜',    avatar: '', price: 48,  tags: '🌸 甜妹·温柔·声音好听' },
-      { name: '灵儿',    avatar: '', price: 58,  tags: '🌸 萝莉音·陪聊' },
     ],
-    mobile: [
-      { name: '小悦',    avatar: '', price: 48,  tags: '🌸 御姐·高冷·带飞' },
-      { name: '曼曼',    avatar: '', price: 68,  tags: '🌸 知心·深夜陪伴' },
-      { name: '欣欣',    avatar: '', price: 48,  tags: '🌸 活泼·气氛组' },
-      { name: '诗雨',    avatar: '', price: 78,  tags: '🌸 气质·高端局' },
-      { name: '冲锋',    avatar: '', price: 88,  tags: '🛡️ 护航·包赢' },
-      { name: '星野',    avatar: '', price: 98,  tags: '🛡️ 战术指挥' },
+    mobileFun: [
+      { name: '小悦',    avatar: '', price: 48,  tags: '🌸 甜妹·活泼·气氛组' },
+      { name: '欣欣',    avatar: '', price: 48,  tags: '🌸 元气·陪聊·娱乐' },
+      { name: '诗雨',    avatar: '', price: 78,  tags: '🌸 气质·高端局·御姐' },
+    ],
+    mobileEscort: [
+      { name: '冲锋',    avatar: '', price: 88,  tags: '🛡️ 护航·包赢·稳' },
+      { name: '星野',    avatar: '', price: 98,  tags: '🛡️ 战术指挥·带飞' },
+      { name: '苍狼',    avatar: '', price: 128, tags: '🛡️ 巅峰赛·百星' },
     ]
   };
 
@@ -376,10 +415,10 @@
   }
 
   function render() {
-    const pcGrid = document.getElementById('pcGrid');
-    const mobileGrid = document.getElementById('mobileGrid');
-    pcGrid.innerHTML = companions.pc.map((p, i) => renderCard(p, i)).join('');
-    mobileGrid.innerHTML = companions.mobile.map((p, i) => renderCard(p, i + 6)).join('');
+    document.getElementById('pcFunGrid').innerHTML = companions.pcFun.map((p, i) => renderCard(p, i)).join('');
+    document.getElementById('pcEscortGrid').innerHTML = companions.pcEscort.map((p, i) => renderCard(p, i + 10)).join('');
+    document.getElementById('mobileFunGrid').innerHTML = companions.mobileFun.map((p, i) => renderCard(p, i + 20)).join('');
+    document.getElementById('mobileEscortGrid').innerHTML = companions.mobileEscort.map((p, i) => renderCard(p, i + 30)).join('');
   }
   render();
 
