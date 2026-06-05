@@ -7,7 +7,7 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    font-family: 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', 'Roboto', sans-serif;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
     color: #fff;
@@ -24,16 +24,18 @@
     z-index: 0;
     pointer-events: none;
   }
-  .wrapper { position: relative; z-index: 1; }
+  .wrapper { position: relative; z-index: 1; scroll-behavior: smooth; }
   .header { text-align: center; padding: 30px 20px 10px; background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%); }
   .header h1 {
     font-size: 3em; font-weight: 900; letter-spacing: 4px;
+    background: -webkit-linear-gradient(135deg, #f7971e, #ffd200, #f7971e);
     background: linear-gradient(135deg, #f7971e, #ffd200, #f7971e);
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: shine 3s ease-in-out infinite; text-shadow: none;
   }
+  @-webkit-keyframes shine
   @keyframes shine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
   .header .sub { color: #ccc; font-size: 1em; margin-top: 4px; letter-spacing: 6px; }
   .mobile-hint { color: rgba(255,255,255,0.5); font-size: 0.8em; margin-top: 8px; }
@@ -71,6 +73,7 @@
   .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); z-index: 999; align-items: center; justify-content: center; }
   .modal-overlay.show { display: flex; }
   .modal-box { background: #1a1a2e; border-radius: 20px; padding: 30px 35px 25px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); animation: popIn 0.3s ease; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  @-webkit-keyframes popIn { from { -webkit-transform: scale(0.85); opacity: 0; } to { -webkit-transform: scale(1); opacity: 1; } }
   @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   .modal-box h2 { font-size: 1.2em; margin-bottom: 6px; color: #ffd200; }
   .modal-box .hint { font-size: 0.85em; color: #aaa; margin-bottom: 16px; }
@@ -207,7 +210,6 @@
 <script>
 var companions = {
   deltaPcFun: [
-    { name: '徐艺', avatar: 'https://raw.githubusercontent.com/richdianjing/rich-esports/main/xuyi-avatar.jpg', price: 1, tags: '第一大怨种', priceLabel: '1元/1小时', alipayQr: 'https://raw.githubusercontent.com/richdianjing/rich-esports/main/5844d51e67a898afdf47de9dca6c094b.jpg' },
     { name: '富晓天', avatar: '', price: 48, tags: '\u5929\u4e0b\u7b2c\u4e00\u5e05\u7684\u7537\u4eba' },
     { name: '灵儿', avatar: '', price: 58, tags: '🌸 甜妹·温柔·声音好听' },
     { name: '小柒', avatar: '', price: 68, tags: '🌸 御姐·知心·深夜陪伴' },
