@@ -271,9 +271,9 @@ function renderCard(p) {
   playerList.push(p);
   var color = colors[idx % colors.length];
   var a;
-  var priceHtml = p.priceLabel || String.fromCharCode(165) + p.price + " <small>/ " + String.fromCharCode(23616) + "</small>";
+  var priceHtml = p.priceLabel || String.fromCharCode(165) + p.price + String.fromCharCode(32,60,115,109,97,108,108,62,47,32,23616,60,47,115,109,97,108,108,62);
   if (p.avatar) {
-    a = String.fromCharCode(60,105,109,103,32,99,108,97,115,115,61,34,97,118,97,116,97,114,34,32,115,114,99,61,34) + p.avatar + String.fromCharCode(34,32,97,108,116,61,34) + p.name + String.fromCharCode(34,32,111,110,101,114,114,111,114,61,34,116,104,105,115,46,115,116,121,108,101,46,100,105,115,112,108,97,121,61,39,110,111,110,101,39,34,62);
+    a = String.fromCharCode(60,105,109,103,32,99,108,97,115,115,61,34,97,118,97,116,97,114,34,32,115,114,99,61,34) + p.avatar + String.fromCharCode(34,32,97,108,116,61,34) + p.name + String.fromCharCode(34,32,111,110,101,114,114,111,114,61,34,116,104,105,115,46,111,110,101,114,114,111,114,61,110,117,108,108,59,116,104,105,115,46,115,116,121,108,101,46,100,105,115,112,108,97,121,61,39,110,111,110,101,39,34,62);
   } else {
     a = String.fromCharCode(60,100,105,118,32,99,108,97,115,115,61,34,97,118,97,116,97,114,45,112,108,97,99,101,104,111,108,100,101,114,34,32,115,116,121,108,101,61,34,98,97,99,107,103,114,111,117,110,100,58) + color + String.fromCharCode(34,62) + p.name.charAt(0) + String.fromCharCode(60,47,100,105,118,62);
   }
