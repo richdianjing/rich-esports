@@ -480,20 +480,15 @@ function saveWallet(w) { localStorage.setItem('rich_wallet', JSON.stringify(w));
 
 function showWallet() {
   var w = getWallet();
-  var msg = '💰 钱包余额：¥' + w.balance.toFixed(2) + '
+  var amt = prompt('💰 当前余额：¥' + w.balance.toFixed(2) + '
 
-充值记录：';
-  for (var i = w.recharge.length - 1; i >= 0; i--) {
-    var r = w.recharge[i];
-    msg += '
-  +¥' + r.amount + ' (' + r.time + ')';
-  }
-  if (w.recharge.length === 0) msg += '
-  暂无充值记录';
-  msg += '
+输入充值金额（元）：
 
-如需提现，请联系站长微信';
-  alert(msg);
+提现请联系站长', '');
+  if (amt === null) return;
+  amt = parseFloat(amt);
+  if (isNaN(amt) || amt <= 0) { alert('请输入有效金额'); return; }
+  recharge(amt);
 }
 
 function recharge(amount) {
@@ -554,12 +549,6 @@ function updateWalletUI() {
   btn.style.display = '';
 }
 
-// Patch initAuth to update wallet UI
-var origInit = initAuth;
-initAuth = function() {
-  if (origInit) origInit();
-  updateWalletUI();
-};
 
 // ===== Auth System =====
 var currentUser = null;
@@ -578,6 +567,7 @@ function initAuth() {
   }
 }
 try { initAuth(); } catch(e) { console.error('Auth init failed:', e); }
+try { updateWalletUI(); } catch(e) {}
 
 function showAuth() { document.getElementById('authOverlay').classList.add('show'); }
 function closeAuth() { document.getElementById('authOverlay').classList.remove('show'); }
