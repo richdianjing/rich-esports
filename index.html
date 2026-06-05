@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RICH电竞 - 三角洲陪玩</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    color: #fff;
+  }
+
+  /* 半透明遮罩 — 让背景不遮挡文字 */
+  body.loaded {
+    background: url('5954aa02c01e20281d5548f1b10a0c6d.jpg') no-repeat center center fixed, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background-size: cover, cover;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wrapper { position: relative; z-index: 1; }
+
+  /* ===== Header ===== */
+  .header {
+    text-align: center;
+    padding: 30px 20px 10px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+  }
+  .header h1 {
+    font-size: 3em;
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #f7971e, #ffd200, #f7971e);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s ease-in-out infinite;
+    text-shadow: none;
+  }
+  @keyframes shine {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .header .sub {
+    color: #ccc;
+    font-size: 1em;
+    margin-top: 4px;
+    letter-spacing: 6px;
+  }
+  .header .tagline {
+    color: #ffd200;
+    font-size: 0.85em;
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+
+  /* ===== 区域标题 ===== */
+  .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 30px 20px 20px;
+    font-size: 1.6em;
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .section-title .line {
+    flex: 1;
+    max-width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #f7971e, transparent);
+  }
+  .section-title .badge {
+    display: inline-block;
+    font-size: 0.5em;
+    background: #f7971e;
+    color: #000;
+    padding: 2px 10px;
+    border-radius: 20px;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+
+  /* ===== 陪玩卡片网格 ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+    padding: 0 20px;
+    max-width: 900px;
+    margin: 0 auto 10px;
+  }
+  .card {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 20px 16px 16px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    border-color: rgba(247,151,30,0.3);
+  }
+
+  /* 头像 */
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    object-fit: cover;
+    border: 3px solid rgba(247,151,30,0.4);
+    transition: border-color 0.3s;
+    display: block;
+  }
+  .card:hover .avatar {
+    border-color: #f7971e;
+  }
+
+  /* 默认无图时的占位 */
+  .avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
+    border: 3px solid rgba(247,151,30,0.4);
+  }
+
+  .card .name {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .card .tags {
+    font-size: 0.75em;
+    color: #ffd200;
+    margin-bottom: 6px;
+  }
+  .card .price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffd200;
+    margin: 6px 0 12px;
+  }
+  .card .price small {
+    font-size: 0.6em;
+    color: #aaa;
+  }
+
+  .btn-order {
+    display: inline-block;
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    color: #000;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+  }
+  .btn-order:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(247,151,30,0.4);
+  }
+
+  /* ===== 收款弹窗 ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.show { display: flex; }
+
+  .modal-box {
+    background: #1a1a2e;
+    border-radius: 20px;
+    padding: 30px 35px 25px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    animation: popIn 0.3s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-box h2 {
+    font-size: 1.2em;
+    margin-bottom: 6px;
+    color: #ffd200;
+  }
+  .modal-box .hint {
+    font-size: 0.85em;
+    color: #aaa;
+    margin-bottom: 16px;
+  }
+  .modal-box .qrcode {
+    width: 100%;
+    max-width: 260px;
+    border-radius: 12px;
+    margin: 0 auto 16px;
+    display: block;
+    border: 3px solid rgba(255,255,255,0.1);
+  }
+  .modal-box .amount {
+    color: #ffd200;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .modal-box .pay-methods {
+    color: #888;
+    font-size: 0.8em;
+    margin-bottom: 16px;
+  }
+  .btn-close-modal {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #ccc;
+    padding: 8px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9em;
+    transition: 0.3s;
+  }
+  .btn-close-modal:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.8em;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 500px) {
+    .header h1 { font-size: 2.2em; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 12px; }
+    .card { padding: 14px 10px 12px; }
+    .avatar, .avatar-placeholder { width: 60px; height: 60px; font-size: 22px; }
+    .section-title { font-size: 1.2em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- ===== Header ===== -->
+  <div class="header">
+    <h1>RICH电竞</h1>
+    <div class="sub">— 三角洲行动 · 专业陪玩 —</div>
+    <div class="tagline">⚡ 上分利器 · 把把C位 · 效率陪玩 ⚡</div>
+  </div>
+
+  <!-- ===== 端游区 ===== -->
+  <div class="section-title">
+    <span class="line"></span>
+    <span>🖥️ 端游区 <span class="badge">HOT</span></span>
+    <span class="line"></span>
+  </div>
+  <div style="max-width:900px;margin:-10px auto 10px;padding:0 24px;font-size:0.85em;color:#ffd200;text-align:center;opacity:0.7;">三角洲行动 · 专业陪玩 · 把把C位</div>
+  <div class="grid" id="pcGrid">
+  </div>
+
+  <!-- ===== 手游区 ===== -->
+  <div class="section-title">
+    <span class="line"></span>
+    <span>📱 手游区</span>
+    <span class="line"></span>
+  </div>
+  <div style="max-width:900px;margin:-10px auto 10px;padding:0 24px;font-size:0.85em;color:#ffd200;text-align:center;opacity:0.7;">三角洲行动 · 高效上分 · 贴心陪伴</div>
+  <div class="grid" id="mobileGrid">
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <div class="footer">
+    RICH电竞 · 三角洲行动专业陪玩 · 用心服务每一位老板
+  </div>
+
+</div>
+
+<!-- ===== 收款弹窗 ===== -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal-box">
+    <h2>💳 下单付款</h2>
+    <p class="hint">请扫码支付后联系客服上号</p>
+    <img src="5844d51e67a898afdf47de9dca6c094b.jpg" alt="收款码" class="qrcode" id="payQr" loading="lazy">
+    <div class="amount" id="payAmount">¥<span id="priceDisplay">0</span></div>
+    <div class="pay-methods">✅ 支持微信 / 支付宝</div>
+    <button class="btn-close-modal" onclick="closePay()">关闭</button>
+  </div>
+</div>
+
+<script>
+  // ===== 数据 =====
+  const companions = {
+    pc: [
+      { name: '战神',    avatar: '', price: 88,  tags: '🛡️ 护航·百星王者' },
+      { name: '猎鹰',    avatar: '', price: 128, tags: '🛡️ 战术指挥·包赢' },
+      { name: '雷霆',    avatar: '', price: 108, tags: '🛡️ 突破手·钢枪猛男' },
+      { name: '影子',    avatar: '', price: 98,  tags: '🛡️ 自由人·补位全能' },
+      { name: '甜甜',    avatar: '', price: 48,  tags: '🌸 甜妹·温柔·声音好听' },
+      { name: '灵儿',    avatar: '', price: 58,  tags: '🌸 萝莉音·陪聊' },
+    ],
+    mobile: [
+      { name: '小悦',    avatar: '', price: 48,  tags: '🌸 御姐·高冷·带飞' },
+      { name: '曼曼',    avatar: '', price: 68,  tags: '🌸 知心·深夜陪伴' },
+      { name: '欣欣',    avatar: '', price: 48,  tags: '🌸 活泼·气氛组' },
+      { name: '诗雨',    avatar: '', price: 78,  tags: '🌸 气质·高端局' },
+      { name: '冲锋',    avatar: '', price: 88,  tags: '🛡️ 护航·包赢' },
+      { name: '星野',    avatar: '', price: 98,  tags: '🛡️ 战术指挥' },
+    ]
+  };
+
+  // 占位头像颜色
+  const colors = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#1abc9c','#e84393'];
+
+  // ===== 渲染 =====
+  function renderCard(p, index) {
+    const color = colors[index % colors.length];
+    // 如果有头像图片就用img，否则用带首字的彩色圆
+    const avatarHtml = p.avatar
+      ? `<img class="avatar" src="${p.avatar}" alt="${p.name}" onerror="this.style.display='none'">`
+      : `<div class="avatar-placeholder" style="background:${color}">${p.name.charAt(0)}</div>`;
+
+    return `
+      <div class="card">
+        ${avatarHtml}
+        <div class="name">${p.name}</div>
+        <div class="tags">${p.tags}</div>
+        <div class="price">¥${p.price} <small>/ 局</small></div>
+        <button class="btn-order" onclick="openPay(${p.price}, '${p.name}')">立即下单</button>
+      </div>
+    `;
+  }
+
+  function render() {
+    const pcGrid = document.getElementById('pcGrid');
+    const mobileGrid = document.getElementById('mobileGrid');
+    pcGrid.innerHTML = companions.pc.map((p, i) => renderCard(p, i)).join('');
+    mobileGrid.innerHTML = companions.mobile.map((p, i) => renderCard(p, i + 6)).join('');
+  }
+  render();
+
+  // ===== 付款弹窗 =====
+  let currentPlayer = '';
+
+  function openPay(price, name) {
+    currentPlayer = name;
+    document.getElementById('priceDisplay').textContent = price;
+    document.getElementById('payModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePay() {
+    document.getElementById('payModal').classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  // 点击遮罩关闭
+  document.getElementById('payModal').addEventListener('click', function(e) {
+    if (e.target === this) closePay();
+  });
+
+  // ESC 键关闭
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePay();
+  });
+  // 延迟加载背景图
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.body.classList.add('loaded');
+    }, 100);
+  });
+</script>
+
+</body>
+</html>
