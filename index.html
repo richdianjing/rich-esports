@@ -257,8 +257,8 @@
       <div class="amount" id="priceDisplay">&#165;0</div>
       <div class="pay-methods">&#9989; 支持微信 / 支付宝</div>
       <input type="text" id="userNameInput" class="input-field" placeholder="输入您的昵称（选填）" maxlength="20">
-      <p style="color:#aaa;font-size:0.8em;margin-bottom:6px">&#128277; 支付完成后将自动生成订单</p>
-      <button class="btn-pay-confirm" id="btnManualCheck" onclick="confirmPayment()" style="display:none">我已支付，查看订单 &#10003;</button>
+      <p style="color:#aaa;font-size:0.8em;margin-bottom:6px">&#128277; 支付后返回此页面自动生成订单</p>
+      <button class="btn-pay-confirm" id="btnManualCheck" onclick="confirmPayment()" style="display:none">已完成支付，查看订单 &#10003;</button>
     </div>
     <div id="orderResult" style="display:none">
       <h2>&#127881; 下单成功</h2>
@@ -401,13 +401,8 @@ function openPay(player) {
   document.body.style.overflow = 'hidden';
   // Mark that user is in payment flow, waiting for return
   window._paymentPending = true;
-  // Show fallback button after 8s (in case auto-detection fails)
-  if (window._payTimer) clearTimeout(window._payTimer);
-  window._payTimer = setTimeout(function() {
-    if (window._paymentPending) {
-      document.getElementById('btnManualCheck').style.display = '';
-    }
-  }, 8000);
+  // Show manual check button
+  document.getElementById('btnManualCheck').style.display = '';
 }
 
 function closePay() {
