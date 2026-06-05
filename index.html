@@ -566,6 +566,7 @@ function showOrders() {
           + '<div class="oi-row"><span class="oi-label">商品</span><span class="oi-value">' + (o.item || '-') + '</span></div>'
           + '<div class="oi-row"><span class="oi-label">金额</span><span class="oi-value oi-status">' + (o.amount || '-') + '</span></div>'
           + '<div class="oi-row"><span class="oi-label">用户</span><span class="oi-value">' + (o.user || '-') + '</span></div>'
+          + '<div style="text-align:right;margin-top:6px"><button class="btn-sm btn-danger" onclick="deleteOrder('" + (o.orderNo || '') + "')">删除订单</button></div>'
           + '</div>';
       }
     }
