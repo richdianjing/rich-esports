@@ -252,12 +252,12 @@
   <div class="modal-box">
     <div id="payView">
       <h2>&#128179; 下单付款</h2>
-      <p class="hint">请扫码支付给 <span id="modalPlayerName" style="color:#ffd200;font-weight:bold"></span></p>
+      <p class="hint" id="payHint">请扫码支付给 <span id="modalPlayerName" style="color:#ffd200;font-weight:bold"></span></p>
       <img src="5844d51e67a898afdf47de9dca6c094b.jpg" alt="收款码" class="qrcode" id="payQr" loading="lazy">
       <div class="amount" id="priceDisplay">&#165;0</div>
-      <div class="pay-methods">&#9989; 支持微信 / 支付宝</div>
-      <input type="text" id="userNameInput" class="input-field" placeholder="输入您的昵称（选填）" maxlength="20">
-      <p style="color:#aaa;font-size:0.8em;margin-bottom:6px">&#128277; 支付后返回此页面自动生成订单</p>
+      <div class="pay-methods" id="payMethods">&#9989; 支持支付宝</div>
+      <input type="text" id="userNameInput" class="input-field" placeholder="输入您的昵称（选填）" maxlength="20" style="display:none">
+      <p style="color:#aaa;font-size:0.8em;margin-bottom:6px" id="payTip">&#128277; 支付后返回此页面自动生成订单</p>
       <button class="btn-pay-confirm" id="btnManualCheck" onclick="confirmPayment()" style="display:none">已完成支付，查看订单 &#10003;</button>
     </div>
     <div id="orderResult" style="display:none">
@@ -466,6 +466,100 @@ window.addEventListener('pageshow', function() { try { onPageVisible(); } catch(
 document.getElementById('payView').addEventListener('click', function() { try { onPageVisible(); } catch(e) {} });
 
 
+
+
+// ===== Wallet System =====
+var OWNER_WECHAT = ''; // Set owner's WeChat nickname to enable withdrawal
+
+function getWallet() {
+  try { return JSON.parse(localStorage.getItem('rich_wallet') || '{"balance":0,"recharge":[]}'); }
+  catch(e) { return {balance:0,recharge:[]}; }
+}
+
+function saveWallet(w) { localStorage.setItem('rich_wallet', JSON.stringify(w)); }
+
+function showWallet() {
+  var w = getWallet();
+  var msg = '💰 钱包余额：¥' + w.balance.toFixed(2) + '
+
+充值记录：';
+  for (var i = w.recharge.length - 1; i >= 0; i--) {
+    var r = w.recharge[i];
+    msg += '
+  +¥' + r.amount + ' (' + r.time + ')';
+  }
+  if (w.recharge.length === 0) msg += '
+  暂无充值记录';
+  msg += '
+
+如需提现，请联系站长微信';
+  alert(msg);
+}
+
+function recharge(amount) {
+  if (!currentUser) { showAuth(); return; }
+  // Show WeChat payment QR (simulated)
+  document.getElementById('payQr').src = '5844d51e67a898afdf47de9dca6c094b.jpg';
+  document.getElementById('priceDisplay').innerHTML = '¥' + amount;
+  document.getElementById('modalPlayerName').textContent = '钱包充值';
+  document.getElementById('payMethods').textContent = '✅ 微信支付';
+  document.getElementById('payTip').textContent = '💰 充值¥' + amount + '，支付后自动到账';
+  document.getElementById('payView').style.display = '';
+  document.getElementById('orderResult').style.display = 'none';
+  document.getElementById('payModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  window._rechargeAmount = amount;
+  window._paymentPending = true;
+  document.getElementById('btnManualCheck').style.display = '';
+}
+
+// Override confirmPayment for recharge
+var origConfirm = confirmPayment;
+confirmPayment = function() {
+  if (window._rechargeAmount) {
+    var w = getWallet();
+    w.balance += window._rechargeAmount;
+    w.recharge.push({amount: window._rechargeAmount, time: new Date().toLocaleString()});
+    saveWallet(w);
+    window._rechargeAmount = 0;
+    window._orderGenerated = false;
+    closePay();
+    alert('✅ 充值成功！当前余额：¥' + w.balance.toFixed(2));
+    return;
+  }
+  origConfirm();
+};
+
+// Wallet button in user bar
+function addWalletUI() {
+  var bar = document.getElementById('userBar');
+  if (!bar) return;
+  var btn = document.createElement('button');
+  btn.className = 'btn-sm wallet-btn';
+  btn.textContent = '💰 ¥0';
+  btn.onclick = showWallet;
+  btn.id = 'walletBtn';
+  btn.style.display = 'none';
+  bar.insertBefore(btn, bar.firstChild);
+}
+addWalletUI();
+
+// Update wallet display
+function updateWalletUI() {
+  var btn = document.getElementById('walletBtn');
+  if (!btn) return;
+  if (!currentUser) { btn.style.display = 'none'; return; }
+  var w = getWallet();
+  btn.textContent = '💰 ¥' + w.balance.toFixed(2);
+  btn.style.display = '';
+}
+
+// Patch initAuth to update wallet UI
+var origInit = initAuth;
+initAuth = function() {
+  if (origInit) origInit();
+  updateWalletUI();
+};
 
 // ===== Auth System =====
 var currentUser = null;
