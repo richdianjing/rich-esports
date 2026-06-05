@@ -16,7 +16,7 @@
 
   /* 半透明遮罩 — 让背景不遮挡文字 */
   body.loaded {
-    background: url('5954aa02c01e20281d5548f1b10a0c6d.jpg') no-repeat center center fixed, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background: url('5954aa02c01e20281d5548f1b10a0c6d.jpg') no-repeat center center, linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     background-size: cover, cover;
   }
 
@@ -25,7 +25,7 @@
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-        -webkit-    z-index: 0;
+    z-index: 0;
     pointer-events: none;
   }
 
@@ -121,7 +121,7 @@
   }
   .card {
     background: rgba(0, 0, 0, 0.55);
-        -webkit-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     padding: 20px 16px 16px;
     text-align: center;
@@ -198,6 +198,7 @@
     cursor: pointer;
     transition: 0.3s;
     font-family: inherit;
+    touch-action: manipulation;
   }
   .btn-order:hover {
     transform: scale(1.03);
