@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RICH电竞 - 无畏契约·三角洲陪玩</title>
 <style>
@@ -61,7 +62,9 @@
   .zone-title span { display: inline-block; background: rgba(0,0,0,0.4); padding: 3px 16px; border-radius: 20px; border: 1px solid rgba(247,151,30,0.2); font-size: 0.9em; }
   .zone-title .badge { display: inline-block; font-size: 0.55em; background: #f7971e; color: #000; padding: 1px 8px; border-radius: 20px; vertical-align: middle; margin-left: 6px; }
 
-  .grid { display: -webkit-grid; display: grid; -webkit-grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 14px; padding: 0 20px; max-width: 900px; margin: 0 auto 6px; }
+  .grid { display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; padding: 0 20px; max-width: 900px; margin: 0 auto 6px; }
+  .grid > * { -webkit-flex: 1 1 185px; flex: 1 1 185px; margin: 7px; max-width: 100%; }
+  .grid > *:first-child:nth-last-child(1) { -webkit-flex: 0 1 auto; flex: 0 1 auto; }
   .card { background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 18px 14px 14px; text-align: center; -webkit-transition: -webkit-transform 0.3s, -webkit-box-shadow 0.3s;
     transition: transform 0.3s, box-shadow 0.3s; cursor: default; }
   .card:hover { -webkit-transform: translateY(-4px); transform: translateY(-4px); -webkit-box-shadow: 0 12px 32px rgba(0,0,0,0.4); box-shadow: 0 12px 32px rgba(0,0,0,0.4); border-color: rgba(247,151,30,0.3); }
@@ -99,8 +102,8 @@
   @media (max-width: 500px) {
     .header h1 { font-size: 2.2em; }
     .game-title h2 { font-size: 1.5em; }
-    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px;
-    padding: 0 12px; }
+    .grid { padding: 0 12px; }
+    .grid > * { margin: 5px; -webkit-flex: 1 1 calc(50% - 10px); flex: 1 1 calc(50% - 10px); }
     .card { padding: 12px 8px 10px; }
     .avatar, .avatar-placeholder { width: 56px; height: 56px; font-size: 20px; }
     .platform-title { font-size: 1em; margin: 18px 12px 2px; }
@@ -222,6 +225,19 @@
   </div>
 </div>
 
+<script>
+(function(){
+  var ua = navigator.userAgent.toLowerCase();
+  if (ua.indexOf('baidu') != -1 || ua.indexOf('bidubrowser') != -1) {
+    // Baidu Browser - show notice
+    var v = (ua.match(/bidubrowser\/([\d.]+)/) || [])[1] || '?';
+    var major = parseInt(v) || 0;
+    if (major < 10) {
+      document.documentElement.innerHTML = '<div style="text-align:center;padding:40vh 20px;font-family:sans-serif"><h2 style="color:#ff6b35">&#x26A0; 百度浏览器版本过旧</h2><p style="color:#666;margin-top:20px;line-height:1.8">请升级到最新版百度浏览器，或使用Chrome/Edge<br>网站基于现代Web技术构建，旧版浏览器无法正常显示</p></div>';
+    }
+  }
+})();
+</script>
 <script>
 var companions = {
   deltaPcFun: [
