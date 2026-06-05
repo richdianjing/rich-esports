@@ -43,6 +43,7 @@
   @keyframes shine { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
   .header .sub { color: #ccc; font-size: 1em; margin-top: 4px; letter-spacing: 6px; }
   .mobile-hint { color: rgba(255,255,255,0.5); font-size: 0.8em; margin-top: 8px; }
+  <div class="user-bar" id="userBar"><span class="uname" id="userDisplay" style="display:none"></span><button class="btn-sm" id="btnOrders" onclick="showOrders()" style="display:none">订单</button><button class="btn-sm" id="btnLogout" onclick="logout()" style="display:none">退出</button><button class="btn-sm" id="btnLogin" onclick="showAuth()">登录/注册</button></div>
   .header .tagline { color: #ffd200; font-size: 0.85em; margin-top: 6px; opacity: 0.8; }
 
   .game-title { text-align: center; padding: 20px 20px 10px; margin: 30px 0 10px; }
@@ -122,6 +123,32 @@
   .order-info .label { color: rgba(255,255,255,0.5); }
   .order-info .value { color: #fff; font-weight: bold; }
   .order-tip { color: #ffd200; font-size: 0.85em; margin-bottom: 12px; line-height: 1.4; }
+  .auth-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; }
+  .auth-overlay.show { display: -webkit-flex; display: flex; }
+  .auth-box { background: #1a1a2e; border-radius: 20px; padding: 30px 25px 25px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); position: relative; }
+  .auth-box h2 { color: #ffd200; font-size: 1.3em; margin-bottom: 5px; }
+  .auth-box .sub { color: #aaa; font-size: 0.85em; margin-bottom: 20px; }
+  .auth-input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: #fff; font-size: 0.95em; font-family: inherit; outline: none; transition: border-color 0.3s; margin-bottom: 12px; box-sizing: border-box; }
+  .auth-input:focus { border-color: #f7971e; }
+  .auth-btn { width: 100%; padding: 12px 0; border: none; border-radius: 10px; background: linear-gradient(135deg, #07c160, #06ad56); color: #fff; font-weight: bold; font-size: 1em; cursor: pointer; transition: 0.3s; font-family: inherit; margin-bottom: 10px; -webkit-appearance: none; }
+  .auth-btn:hover { -webkit-transform: scale(1.02); transform: scale(1.02); }
+  .auth-switch { color: #888; font-size: 0.85em; cursor: pointer; }
+  .auth-switch:hover { color: #ffd200; }
+  .auth-close { position: absolute; top: 10px; right: 15px; color: #666; font-size: 1.5em; cursor: pointer; }
+  .auth-tip { color: #4fc3f7; font-size: 0.75em; margin-bottom: 12px; }
+  .user-bar { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: flex-end; justify-content: flex-end; padding: 8px 20px; gap: 10px; }
+  .user-bar .uname { color: #ffd200; font-size: 0.85em; }
+  .user-bar .btn-sm { padding: 4px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: transparent; color: #ccc; font-size: 0.8em; cursor: pointer; font-family: inherit; }
+  .user-bar .btn-sm:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .orders-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; }
+  .orders-overlay.show { display: -webkit-flex; display: flex; }
+  .orders-box { background: #1a1a2e; border-radius: 20px; padding: 25px; max-width: 420px; width: 92%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); }
+  .orders-box h2 { color: #ffd200; font-size: 1.2em; margin-bottom: 15px; text-align: center; }
+  .order-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.06); }
+  .order-item .oi-row { display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; font-size: 0.82em; padding: 3px 0; }
+  .order-item .oi-label { color: rgba(255,255,255,0.4); }
+  .order-item .oi-value { color: #fff; }
+  .no-orders { text-align: center; color: rgba(255,255,255,0.3); padding: 30px 0; font-size: 0.9em; }
 </style>
 <noscript><div style="color:#fff;text-align:center;padding:40vh 20px;font-size:1.2em">请启用JavaScript查看内容</div></noscript>
 </head>
@@ -198,6 +225,19 @@
   <div class="footer">RICH电竞 &middot; 无畏契约 &middot; 三角洲专业陪玩 &middot; 用心服务每一位老板</div>
 </div>
 
+<!-- ===== 登录/注册 ===== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <span class="auth-close" onclick="closeAuth()">&times;</span>
+    <h2 id="authTitle">微信登录</h2>
+    <p class="sub" id="authSub">绑定微信即可开始下单</p>
+    <input type="text" id="authWechat" class="auth-input" placeholder="微信昵称" maxlength="30">
+    <input type="tel" id="authPhone" class="auth-input" placeholder="手机号" maxlength="11">
+    <button class="auth-btn" id="authBtn" onclick="handleAuth()">绑定并登录</button>
+    <div class="auth-tip">信息仅用于订单记录</div>
+  </div>
+</div>
+
 <!-- ===== 收款弹窗 ===== -->
 <div class="modal-overlay" id="payModal">
   <div class="modal-box">
@@ -223,6 +263,15 @@
       <div class="order-tip">&#128158; 请将订单号发给客服安排上号</div>
       <button class="btn-close-modal" onclick="closePay()">完成</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== 订单查询 ===== -->
+<div class="orders-overlay" id="ordersOverlay">
+  <div class="orders-box">
+    <h2>我的订单</h2>
+    <div id="ordersList"></div>
+    <button class="btn-close-modal" onclick="closeOrders()" style="margin-top:10px;width:100%">关闭</button>
   </div>
 </div>
 
@@ -323,6 +372,7 @@ try { render(); } catch(e) { console.error(e); document.body.innerHTML += '<div 
 var currentPlayer = null;
 
 function openPay(player) {
+  if (!currentUser) { showAuth(); return; }
   currentPlayer = player;
   document.getElementById('payQr').src = player.alipayQr || '5844d51e67a898afdf47de9dca6c094b.jpg';
   document.getElementById('priceDisplay').innerHTML = player.priceLabel || '¥' + player.price + ' <small>/局</small>';
@@ -369,6 +419,24 @@ function confirmPayment() {
   document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
   document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || '¥' + currentPlayer.price;
 }
+  // Save order to localStorage
+  orderNo = document.getElementById('orderNoDisplay').textContent;
+  if (orderNo && orderNo !== '-') {
+    try {
+      var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+      orders.push({
+        orderNo: orderNo,
+        time: document.getElementById('orderTimeDisplay').textContent,
+        user: document.getElementById('orderUserDisplay').textContent,
+        item: document.getElementById('orderItemDisplay').textContent,
+        amount: document.getElementById('orderAmountDisplay').textContent,
+        player: currentPlayer ? currentPlayer.name : '',
+        userPhone: currentUser ? currentUser.phone : '',
+        userWechat: currentUser ? currentUser.wechat : ''
+      });
+      localStorage.setItem('rich_orders', JSON.stringify(orders));
+    } catch(e) {}
+  }
 
 // Auto-detect when user returns to page after payment
 function onPageVisible() {
@@ -387,6 +455,91 @@ window.addEventListener('focus', onPageVisible);
 window.addEventListener('pageshow', onPageVisible);
 // Also check on any click in the modal (helps with WeChat/QQ browsers)
 document.getElementById('payView').addEventListener('click', function() { onPageVisible(); });
+
+
+// ===== Auth System =====
+var currentUser = null;
+var authData = JSON.parse(localStorage.getItem('rich_auth') || '{}');
+
+function initAuth() {
+  if (authData.phone && authData.wechat) {
+    currentUser = authData;
+    document.getElementById('userDisplay').textContent = authData.wechat;
+    document.getElementById('userDisplay').style.display = '';
+    document.getElementById('btnOrders').style.display = '';
+    document.getElementById('btnLogout').style.display = '';
+    document.getElementById('btnLogin').style.display = 'none';
+  }
+}
+initAuth();
+
+function showAuth() { document.getElementById('authOverlay').classList.add('show'); }
+function closeAuth() { document.getElementById('authOverlay').classList.remove('show'); }
+
+function handleAuth() {
+  var wechat = document.getElementById('authWechat').value.trim();
+  var phone = document.getElementById('authPhone').value.trim();
+  if (!wechat) { alert('请输入微信昵称'); return; }
+  if (!phone || phone.length < 11) { alert('请输入正确的手机号'); return; }
+  authData = { wechat: wechat, phone: phone };
+  localStorage.setItem('rich_auth', JSON.stringify(authData));
+  currentUser = authData;
+  document.getElementById('userDisplay').textContent = wechat;
+  document.getElementById('userDisplay').style.display = '';
+  document.getElementById('btnOrders').style.display = '';
+  document.getElementById('btnLogout').style.display = '';
+  document.getElementById('btnLogin').style.display = 'none';
+  closeAuth();
+}
+
+function logout() {
+  if (!confirm('确认退出登录？')) return;
+  localStorage.removeItem('rich_auth');
+  authData = {}; currentUser = null;
+  document.getElementById('userDisplay').style.display = 'none';
+  document.getElementById('btnOrders').style.display = 'none';
+  document.getElementById('btnLogout').style.display = 'none';
+  document.getElementById('btnLogin').style.display = '';
+}
+
+// ===== Order Storage =====
+function saveOrder(order) {
+  var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+  order.userPhone = currentUser.phone;
+  order.userWechat = currentUser.wechat;
+  orders.push(order);
+  localStorage.setItem('rich_orders', JSON.stringify(orders));
+}
+
+// ===== Order Query =====
+function showOrders() {
+  if (!currentUser) { showAuth(); return; }
+  var orders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+  var myOrders = orders.filter(function(o) { return o.userPhone === currentUser.phone; });
+  var html = '';
+  if (myOrders.length === 0) {
+    html = '<div class="no-orders">暂无订单记录</div>';
+  } else {
+    for (var i = myOrders.length - 1; i >= 0; i--) {
+      var o = myOrders[i];
+      html += '<div class="order-item">'
+        + '<div class="oi-row"><span class="oi-label">订单号</span><span class="oi-value">' + o.orderNo + '</span></div>'
+        + '<div class="oi-row"><span class="oi-label">时间</span><span class="oi-value">' + o.time + '</span></div>'
+        + '<div class="oi-row"><span class="oi-label">商品</span><span class="oi-value">' + o.item + '</span></div>'
+        + '<div class="oi-row"><span class="oi-label">金额</span><span class="oi-value oi-status">' + o.amount + '</span></div>'
+        + '<div class="oi-row"><span class="oi-label">下单用户</span><span class="oi-value">' + o.user + '</span></div>'
+        + '</div>';
+    }
+  }
+  document.getElementById('ordersList').innerHTML = html;
+  document.getElementById('ordersOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOrders() {
+  document.getElementById('ordersOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
 
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePay();
