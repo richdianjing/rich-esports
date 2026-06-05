@@ -386,6 +386,8 @@ function openPay(player) {
   document.getElementById('userNameInput').value = '';
   document.getElementById('payView').style.display = '';
   document.getElementById('orderResult').style.display = 'none';
+  document.getElementById('orderNoDisplay').textContent = '-';
+  window._orderGenerated = false;
   document.getElementById('btnManualCheck').style.display = 'none';
   document.getElementById('payModal').classList.add('show');
   document.body.style.overflow = 'hidden';
@@ -410,6 +412,11 @@ function closePay() {
 
 function confirmPayment() {
   if (!currentPlayer) { closePay(); return; }
+  // Prevent duplicate orders
+  if (document.getElementById('orderResult').style.display !== 'none' && 
+      document.getElementById('orderNoDisplay').textContent !== '-') {
+    return;
+  }
   var userName = document.getElementById('userNameInput').value.trim();
   if (!userName) userName = currentPlayer.name + '（匿名用户）';
   var now = new Date();
@@ -570,6 +577,21 @@ function showOrders() {
 function closeOrders() {
   document.getElementById('ordersOverlay').classList.remove('show');
   document.body.style.overflow = '';
+}
+
+function deleteOrder(orderNo) {
+  if (!orderNo || !confirm('确认删除订单 ' + orderNo + ' ？')) return;
+  try {
+    var allOrders = JSON.parse(localStorage.getItem('rich_orders') || '[]');
+    var newOrders = [];
+    for (var i = 0; i < allOrders.length; i++) {
+      if (allOrders[i].orderNo !== orderNo) {
+        newOrders.push(allOrders[i]);
+      }
+    }
+    localStorage.setItem('rich_orders', JSON.stringify(newOrders));
+    showOrders(); // Refresh the list
+  } catch(e) {}
 }
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePay();
