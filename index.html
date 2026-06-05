@@ -273,20 +273,18 @@ function renderCard(p) {
   var a;
   var priceHtml = p.priceLabel || String.fromCharCode(165) + p.price + " <small>/ " + String.fromCharCode(23616) + "</small>";
   if (p.avatar) {
-    a = '<img class="avatar" src="' + p.avatar + '" alt="' + p.name + '" onerror="this.style.display=' + "'" + 'none' + "'" + '">';
+    a = String.fromCharCode(60,105,109,103,32,99,108,97,115,115,61,34,97,118,97,116,97,114,34,32,115,114,99,61,34) + p.avatar + String.fromCharCode(34,32,97,108,116,61,34) + p.name + String.fromCharCode(34,32,111,110,101,114,114,111,114,61,34,116,104,105,115,46,115,116,121,108,101,46,100,105,115,112,108,97,121,61,39,110,111,110,101,39,34,62);
   } else {
-    a = '<div class="avatar-placeholder" style="background:' + color + '">' + p.name.charAt(0) + '</div>';
+    a = String.fromCharCode(60,100,105,118,32,99,108,97,115,115,61,34,97,118,97,116,97,114,45,112,108,97,99,101,104,111,108,100,101,114,34,32,115,116,121,108,101,61,34,98,97,99,107,103,114,111,117,110,100,58) + color + String.fromCharCode(34,62) + p.name.charAt(0) + String.fromCharCode(60,47,100,105,118,62);
   }
-  return '<div class="card">'
+  return String.fromCharCode(60,100,105,118,32,99,108,97,115,115,61,34,99,97,114,100,34,62)
     + a
-    + '<div class="name">' + p.name + '</div>'
-    + '<div class="tags">' + p.tags + '</div>'
-    + '<div class="price">' + (p.priceLabel || String.fromCharCode(165) + p.price + ' <small>/ ' + String.fromCharCode(23616) + '</small>') + '</div>'
-    + '<button class="btn-order" onclick="openPay(' + p.price + ", '" + p.name + "', '" + (p.alipayQr || 'https://raw.githubusercontent.com/richdianjing/rich-esports/main/5844d51e67a898afdf47de9dca6c094b.jpg') + "')">" + String.fromCharCode(31435,21363,19979,21333) + '</button>'
-    + '</div>';
-}
-
-function render() {
+    + String.fromCharCode(60,100,105,118,32,99,108,97,115,115,61,34,110,97,109,101,34,62) + p.name + String.fromCharCode(60,47,100,105,118,62)
+    + String.fromCharCode(60,100,105,118,32,99,108,97,115,115,61,34,116,97,103,115,34,62) + p.tags + String.fromCharCode(60,47,100,105,118,62)
+    + String.fromCharCode(60,100,105,118,32,99,108,97,115,115,61,34,112,114,105,99,101,34,62) + priceHtml + String.fromCharCode(60,47,100,105,118,62)
+    + String.fromCharCode(60,98,117,116,116,111,110,32,99,108,97,115,115,61,34,98,116,110,45,111,114,100,101,114,34,32,100,97,116,97,45,105,100,120,61,34) + idx + String.fromCharCode(34,62) + String.fromCharCode(31435,21363,19979,21333) + String.fromCharCode(60,47,98,117,116,116,111,110,62)
+    + String.fromCharCode(60,47,100,105,118,62);
+}function render() {
   playerList = [];
   globalIndex = 0;
   document.getElementById('deltaPcFunGrid').innerHTML = companions.deltaPcFun.map(renderCard).join('');
