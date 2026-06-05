@@ -418,10 +418,8 @@ function closePay() {
 function confirmPayment() {
   if (!currentPlayer) { closePay(); return; }
   // Prevent duplicate orders
-  if (document.getElementById('orderResult').style.display !== 'none' && 
-      document.getElementById('orderNoDisplay').textContent !== '-') {
-    return;
-  }
+  if (window._orderGenerated) { return; }
+  window._orderGenerated = true;
   var userName = document.getElementById('userNameInput').value.trim();
   if (!userName) userName = currentPlayer.name + '（匿名用户）';
   var now = new Date();
