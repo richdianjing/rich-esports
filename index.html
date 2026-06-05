@@ -208,7 +208,7 @@
       <div class="amount" id="priceDisplay">&#165;0</div>
       <div class="pay-methods">&#9989; 支持微信 / 支付宝</div>
       <input type="text" id="userNameInput" class="input-field" placeholder="输入您的昵称（选填）" maxlength="20">
-      <button class="btn-pay-confirm" onclick="confirmPayment()">我已支付，查看订单 &#10003;</button>
+      <p style="color:#aaa;font-size:0.8em;margin-bottom:10px">&#128277; 支付完成后将自动生成订单</p>
     </div>
     <div id="orderResult" style="display:none">
       <h2>&#127881; 下单成功</h2>
@@ -331,6 +331,8 @@ function openPay(player) {
   document.getElementById('orderResult').style.display = 'none';
   document.getElementById('payModal').classList.add('show');
   document.body.style.overflow = 'hidden';
+  // Mark that user is in payment flow, waiting for return
+  window._paymentPending = true;
 }
 
 function closePay() {
@@ -356,6 +358,23 @@ function confirmPayment() {
   document.getElementById('orderItemDisplay').textContent = currentPlayer.name + ' 陪玩';
   document.getElementById('orderAmountDisplay').textContent = currentPlayer.priceLabel || '¥' + currentPlayer.price;
 }
+
+// Auto-detect when user returns to page after payment
+function onPageVisible() {
+  if (window._paymentPending) {
+    window._paymentPending = false;
+    confirmPayment();
+    // Play a subtle notification
+    if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
+  }
+}
+// Multiple detection methods for cross-browser compatibility
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') onPageVisible();
+});
+window.addEventListener('focus', onPageVisible);
+window.addEventListener('pageshow', onPageVisible);
+// Also handle the case where user clicks the modal overlay
 
 document.getElementById('payModal').addEventListener('click', function(e) {
   if (e.target === this) closePay();
