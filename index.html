@@ -5,6 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>RICH电竞 - 无畏契约·三角洲陪玩</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -485,7 +488,7 @@ function initAuth() {
     document.getElementById('btnLogin').style.display = 'none';
   }
 }
-initAuth();
+try { initAuth(); } catch(e) { console.error('Auth init failed:', e); }
 
 function showAuth() { document.getElementById('authOverlay').classList.add('show'); }
 function closeAuth() { document.getElementById('authOverlay').classList.remove('show'); }
